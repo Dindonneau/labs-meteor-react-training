@@ -5,8 +5,12 @@ import { TasksCollection } from "../imports/api/TasksCollection"
 import "../imports/api/TasksPublication"
 import "../imports/api/tasksMethods"
 
-const insertTask = async (taskText: string) => {
-  await TasksCollection.insertAsync({ text: taskText })
+const insertTask = async (taskText: string, user: Meteor.User) => {
+  await TasksCollection.insertAsync({
+    text: taskText,
+    userId: user._id,
+    createdAt: new Date()
+  })
 }
 
 const SEED_USERNAME = "meteorite"
@@ -20,6 +24,9 @@ Meteor.startup(async () => {
     })
   }
 
+  const user = await Accounts.findUserByUsername(SEED_USERNAME)
+  if (!user) throw new Error("User not found, which should never happen")
+
   if ((await TasksCollection.find().countAsync()) === 0) {
     const myTasks = [
       "First Task",
@@ -31,6 +38,6 @@ Meteor.startup(async () => {
       "Seventh Task"
     ]
 
-    myTasks.forEach(insertTask)
+    myTasks.forEach(taskText => insertTask(taskText, user))
   }
 })
