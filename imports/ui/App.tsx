@@ -4,22 +4,30 @@ import { Task } from "./Task"
 import { TaskForm } from "./TaskForm"
 import { Meteor } from "meteor/meteor"
 import { useState } from "react"
+import { LoginForm } from "./LoginForm"
 
 export const App = () => {
+  const user = useTracker(() => Meteor.user())
   const isLoading = useSubscribe("tasks")
   const [hideCompleted, setHideCompleted] = useState(false)
 
+  const logout = () => Meteor.logout()
+
   const hideCompletedFilter = { isChecked: { $ne: true } }
 
-  const tasks = useTracker(() =>
-    TasksCollection.find(hideCompleted ? hideCompletedFilter : {}, {
+  const tasks = useTracker(() => {
+    if (!user) return []
+
+    return TasksCollection.find(hideCompleted ? hideCompletedFilter : {}, {
       sort: { createdAt: -1 }
     }).fetch()
-  )
+  })
 
-  const pendingTasksCount = useTracker(() =>
-    TasksCollection.find(hideCompletedFilter).count()
-  )
+  const pendingTasksCount = useTracker(() => {
+    if (!user) return 0
+
+    return TasksCollection.find(hideCompletedFilter).count()
+  })
 
   const pendingTasksTitle = pendingTasksCount ? ` (${pendingTasksCount})` : ""
 
@@ -49,24 +57,34 @@ export const App = () => {
       </header>
 
       <div className='main'>
-        <TaskForm />
+        {user ? (
+          <>
+            <div className='user' onClick={logout}>
+              {user.username} 🚪
+            </div>
 
-        <div className='filter'>
-          <button onClick={() => setHideCompleted(!hideCompleted)}>
-            {hideCompleted ? "Show All" : "Hide Completed"}
-          </button>
-        </div>
+            <TaskForm />
 
-        <ul className='tasks'>
-          {tasks.map(task => (
-            <Task
-              key={task._id}
-              task={task}
-              onCheckboxClick={handleToggleCheck}
-              onDeleteClick={handleDelete}
-            />
-          ))}
-        </ul>
+            <div className='filter'>
+              <button onClick={() => setHideCompleted(!hideCompleted)}>
+                {hideCompleted ? "Show All" : "Hide Completed"}
+              </button>
+            </div>
+
+            <ul className='tasks'>
+              {tasks.map(task => (
+                <Task
+                  key={task._id}
+                  task={task}
+                  onCheckboxClick={handleToggleCheck}
+                  onDeleteClick={handleDelete}
+                />
+              ))}
+            </ul>
+          </>
+        ) : (
+          <LoginForm />
+        )}
       </div>
     </div>
   )
