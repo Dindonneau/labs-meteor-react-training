@@ -26,7 +26,10 @@
       /* Support absolute /imports/* with a leading '/' */
       "/*": ["./*"],
       /* Pull in type declarations for Meteor packages from either zodern:types or @types/meteor packages */
-      "meteor/*": ["./node_modules/@types/meteor/*", "./.meteor/local/types/packages.d.ts"]
+      "meteor/*": [
+        "./.meteor/local/types/packages.d.ts",
+        "./node_modules/@types/meteor/*"
+      ]
     },
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
