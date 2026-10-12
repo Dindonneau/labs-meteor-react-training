@@ -81,13 +81,18 @@ A list of tasks, stored in MongoDB and rendered reactively:
 - `imports/api/TasksCollection.ts` — the collection, typed with `TaskDocument`
 - `imports/api/TasksPublication.ts` — the explicit `tasks` publication
 - `imports/api/tasksMethods.ts` — the three `tasks.*` methods, the only write paths
-- `imports/ui/App.tsx` — subscribes with `useSubscribe` and reads with `useTracker`
+- `imports/ui/App.tsx` — subscribes with `useSubscribe`, reads with `useTracker`, and shows the login form until someone is connected
+- `imports/ui/LoginForm.tsx` — username and password sign-in
 - `imports/ui/TaskForm.tsx` — the form, writing through the method
 - `imports/ui/Task.tsx` — a single task row
-- `server/main.ts` — seeds a few tasks on first startup
+- `server/main.ts` — seeds the tutorial user and its tasks on first startup
 
-## A pinned dependency
+Every task belongs to a user. The `tasks` publication sends only the connected user's own tasks, so other people's never reach the client at all. The seed account is `meteorite` / `password`, for local use only.
 
-`ts-checker-rspack-plugin` is held at `^1.7.0`, not the `^1.5.2` the Meteor scaffold ships: up to 1.6.x it watches files through `chokidar@3` and `fsevents`, which on macOS drives `meteor run` into an endless restart loop as soon as anything has been npm-installed.
+> Coming from an earlier step, run `meteor reset` first. Tasks created before this one carry no `userId`, so the filtered publication would never send them and the list would look empty.
 
-What exactly went wrong, how it was diagnosed and how it was measured: **[docs/pinned-ts-checker-rspack-plugin.md](docs/pinned-ts-checker-rspack-plugin.md)**.
+## A minimum dependency version
+
+`ts-checker-rspack-plugin` requires at least 1.7.0, hence `^1.7.0` instead of the `^1.5.2` the Meteor scaffold ships: up to 1.6.x it watches files through `chokidar@3` and `fsevents`, which on macOS drives `meteor run` into an endless restart loop as soon as anything has been npm-installed.
+
+What exactly went wrong, how it was diagnosed and how it was measured: **[docs/ts-checker-rspack-plugin-version.md](docs/ts-checker-rspack-plugin-version.md)**.

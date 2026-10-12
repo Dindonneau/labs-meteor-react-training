@@ -1,4 +1,4 @@
-# Why ts-checker-rspack-plugin is pinned to ^1.7.0
+# Why ts-checker-rspack-plugin needs at least 1.7.0
 
 Resolved by a dependency upgrade. Up to 1.6.x the plugin sends `meteor run` into an endless rspack restart loop on macOS, which is why the constraint is `^1.7.0` and not the `^1.5.2` the Meteor scaffold ships. The diagnosis took several wrong turns, recorded below so they are not repeated.
 
