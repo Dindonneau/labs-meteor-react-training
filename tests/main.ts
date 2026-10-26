@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import assert from 'assert';
 
-describe('lemtrain', function () {
+describe('meteor-react-training', function () {
   it('package.json has correct name', async function () {
     const { name } = await import('../package.json');
-    assert.strictEqual(name, 'lemtrain');
+    assert.strictEqual(name, 'meteor-react-training');
   });
 
   if (Meteor.isClient) {

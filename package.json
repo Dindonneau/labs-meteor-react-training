@@ -1,5 +1,5 @@
 {
-  "name": "lemtrain",
+  "name": "meteor-react-training",
   "private": true,
   "scripts": {
     "start": "meteor run",

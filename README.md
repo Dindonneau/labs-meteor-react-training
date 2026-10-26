@@ -1,4 +1,4 @@
-# lemtrain
+# meteor-react-training
 
 A training project: the official Meteor tasks tutorial, rebuilt with Meteor 3, React and TypeScript.
 
@@ -13,7 +13,7 @@ The app follows the official Meteor React tutorial: <https://docs.meteor.com/tut
 The tutorial is written in JavaScript, but the project was scaffolded with
 
 ```bash
-meteor create lemtrain --typescript
+meteor create meteor-react-training --typescript
 ```
 
 so every step is adapted to TypeScript: `.ts` / `.tsx` modules, collections typed through `Mongo.Collection<T>`, and typed props on the components.
