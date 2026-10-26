@@ -1,29 +1,22 @@
-# lemtrain
+# meteor-react-training
 
-A training project: the official Meteor tasks tutorial, rebuilt with Meteor 3,
-React and TypeScript.
+A training project: the official Meteor tasks tutorial, rebuilt with Meteor 3, React and TypeScript.
 
-Its only purpose is to practise the Meteor fundamentals on a throwaway app —
-collections, publications, subscriptions, the async server API — before applying
-them to real work.
+Its only purpose is to practise the Meteor fundamentals on a throwaway app — collections, publications, subscriptions, the async server API — before applying them to real work.
 
-Even here, the app runs server-authoritative: no `autopublish`, no `insecure`.
-Every read goes through an explicit publication, and every write goes through
-a Meteor method — the client never touches the collection directly.
+Even here, the app runs server-authoritative: no `autopublish`, no `insecure`. Every read goes through an explicit publication, and every write goes through a Meteor method — the client never touches the collection directly.
 
 ## The tutorial
 
-The app follows the official Meteor React tutorial:
-<https://docs.meteor.com/tutorials/react/>
+The app follows the official Meteor React tutorial: <https://docs.meteor.com/tutorials/react/>
 
 The tutorial is written in JavaScript, but the project was scaffolded with
 
 ```bash
-meteor create lemtrain --typescript
+meteor create meteor-react-training --typescript
 ```
 
-so every step is adapted to TypeScript: `.ts` / `.tsx` modules, collections
-typed through `Mongo.Collection<T>`, and typed props on the components.
+so every step is adapted to TypeScript: `.ts` / `.tsx` modules, collections typed through `Mongo.Collection<T>`, and typed props on the components.
 
 ## Stack
 
@@ -50,18 +43,23 @@ Run the tests with:
 meteor npm test
 ```
 
+Check types with:
+
+```bash
+meteor npm run typecheck
+```
+
+Types are checked during the build too, so this script is mainly for CI and pre-commit checks.
+
 ## Inspecting the database
 
-Meteor starts its own MongoDB next to the app, on the port after the app's.
-While `meteor run` is up, point MongoDB Compass at:
+Meteor starts its own MongoDB next to the app, on the port after the app's. While `meteor run` is up, point MongoDB Compass at:
 
 ```
 mongodb://127.0.0.1:3001/meteor
 ```
 
-The database is named `meteor` and its files live in `.meteor/local/db`, so
-`meteor reset` wipes it. The server is stopped together with the app, so the
-connection only works while `meteor run` is running.
+The database is named `meteor` and its files live in `.meteor/local/db`, so `meteor reset` wipes it. The server is stopped together with the app, so the connection only works while `meteor run` is running.
 
 ## Layout
 
@@ -74,11 +72,7 @@ imports/         lazily loaded: nothing here runs until something imports it
 tests/           Mocha test module
 ```
 
-The split matters: Meteor loads `client/` and `server/` automatically, in a
-defined order, while `imports/` is only pulled in on demand. Shared code
-therefore lives under `imports/`, and `server/main.ts` imports the publications
-and methods it wants to register. `client/main.tsx` imports the methods too, so
-the client can run their optimistic simulation.
+The split matters: Meteor loads `client/` and `server/` automatically, in a defined order, while `imports/` is only pulled in on demand. Shared code therefore lives under `imports/`, and `server/main.ts` imports the publications and methods it wants to register. `client/main.tsx` imports the methods too, so the client can run their optimistic simulation.
 
 ## What it does
 
@@ -87,7 +81,18 @@ A list of tasks, stored in MongoDB and rendered reactively:
 - `imports/api/TasksCollection.ts` — the collection, typed with `TaskDocument`
 - `imports/api/TasksPublication.ts` — the explicit `tasks` publication
 - `imports/api/tasksMethods.ts` — the three `tasks.*` methods, the only write paths
-- `imports/ui/App.tsx` — subscribes with `useSubscribe` and reads with `useTracker`
+- `imports/ui/App.tsx` — subscribes with `useSubscribe`, reads with `useTracker`, and shows the login form until someone is connected
+- `imports/ui/LoginForm.tsx` — username and password sign-in
 - `imports/ui/TaskForm.tsx` — the form, writing through the method
 - `imports/ui/Task.tsx` — a single task row
-- `server/main.ts` — seeds a few tasks on first startup
+- `server/main.ts` — seeds the tutorial user and its tasks on first startup
+
+Every task belongs to a user. The `tasks` publication sends only the connected user's own tasks, so other people's never reach the client at all. The seed account is `meteorite` / `password`, for local use only.
+
+> Coming from an earlier step, run `meteor reset` first. Tasks created before this one carry no `userId`, so the filtered publication would never send them and the list would look empty.
+
+## A minimum dependency version
+
+`ts-checker-rspack-plugin` requires at least 1.7.0, hence `^1.7.0` instead of the `^1.5.2` the Meteor scaffold ships: up to 1.6.x it watches files through `chokidar@3` and `fsevents`, which on macOS drives `meteor run` into an endless restart loop as soon as anything has been npm-installed.
+
+What exactly went wrong, how it was diagnosed and how it was measured: **[docs/ts-checker-rspack-plugin-version.md](docs/ts-checker-rspack-plugin-version.md)**.
